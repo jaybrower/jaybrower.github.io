@@ -418,6 +418,7 @@
     <span class="chip">iRacing shared memory</span>
     <span class="chip">No injecting</span>
     <span class="chip">Per-monitor layout</span>
+    <span class="chip">Pit-aware</span>
     <span class="chip">In-app updates</span>
     <span class="chip">Windows 10/11</span>
   </div>
@@ -439,10 +440,12 @@
         <p>Proximity list centered on your car — drivers ahead and behind at a glance.</p>
         <ul>
           <li>Gap to player (seconds / laps)</li>
+          <li>Closing rate (s/lap) — green when you're gaining, red when you're losing ground</li>
           <li>Current position</li>
           <li>Position gained/lost vs. starting grid</li>
           <li>iRating and Safety Rating</li>
           <li>Estimated iRating delta based on current order</li>
+          <li>Pit-aware: switches to position view with a PIT badge when you're stopped</li>
         </ul>
       </div>
 
@@ -465,7 +468,7 @@
         <ul>
           <li>Current fuel and lap-by-lap consumption rate</li>
           <li>Laps remaining on current fuel</li>
-          <li>Lap-time history with degradation delta</li>
+          <li>Tire degradation vs. session-best lap (out-laps and in-laps filtered out)</li>
           <li>Estimated "pit by lap" based on fuel window</li>
         </ul>
       </div>
@@ -549,6 +552,13 @@
         <div class="feature-text">
           <strong>Safety Rating badges</strong>
           <span>Color-coded letter badges (red → blue) in the Relative overlay for instant at-a-glance Safety Rating reads.</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🅿️</div>
+        <div class="feature-text">
+          <strong>Pit-aware overlays</strong>
+          <span>Overlays detect when you're in pit and adapt automatically — Relative switches to leaderboard-position view, tire-deg analysis ignores out-laps and in-laps so wear numbers stay honest.</span>
         </div>
       </div>
     </div>
