@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jaybrower</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      padding: 24px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #f8fafc;
+      letter-spacing: -0.02em;
+    }
+    p { font-size: 14px; color: #64748b; }
+    .projects {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 360px;
+    }
+    a.project-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 16px 18px;
+      text-decoration: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    a.project-card:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(59,130,246,0.4);
+    }
+    .project-icon { font-size: 22px; flex-shrink: 0; }
+    .project-info strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 3px;
+    }
+    .project-info span { font-size: 12px; color: #64748b; }
+  </style>
+</head>
+<body>
+  <div style="text-align:center;">
+    <h1>jaybrower</h1>
+    <p style="margin-top:6px;">Projects &amp; tools</p>
+  </div>
+  <div class="projects">
+    <a class="project-card" href="/racelayer/">
+      <div class="project-icon">🏁</div>
+      <div class="project-info">
+        <strong>RaceLayer</strong>
+        <span>iRacing HUD overlay for Windows</span>
+      </div>
+    </a>
+  </div>
+</body>
+</html>

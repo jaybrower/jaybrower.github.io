@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RaceLayer — iRacing HUD Overlay</title>
+  <meta name="description" content="A lightweight, customizable iRacing HUD overlay for Windows. Real-time telemetry overlays with no performance impact." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0f172a;
+      --surface:   #1e293b;
+      --border:    rgba(255,255,255,0.08);
+      --text:      #e2e8f0;
+      --muted:     #64748b;
+      --accent:    #3b82f6;
+      --accent-lt: #60a5fa;
+      --green:     #4ade80;
+      --yellow:    #fbbf24;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    a { color: var(--accent-lt); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(15,23,42,0.9);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .nav-brand {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-brand .flag { font-size: 18px; }
+    .nav-links { display: flex; gap: 20px; align-items: center; }
+    .nav-links a {
+      font-size: 13px;
+      color: var(--muted);
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+
+    /* ── Hero ── */
+    .hero {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 72px 24px 56px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--accent-lt);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-size: clamp(36px, 6vw, 56px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #f8fafc;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .hero h1 span { color: var(--accent-lt); }
+    .hero p {
+      font-size: 17px;
+      color: #94a3b8;
+      max-width: 560px;
+      margin: 0 auto 36px;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: 1px solid var(--accent);
+    }
+    .btn-primary:hover {
+      background: #2563eb;
+      text-decoration: none;
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.05);
+      color: #cbd5e1;
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.09);
+      color: #f1f5f9;
+      text-decoration: none;
+    }
+
+    /* ── Pill chips ── */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 40px;
+    }
+    .chip {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ── Main content ── */
+    .content {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── Section ── */
+    .section { margin-top: 56px; }
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-lt);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 20px;
+    }
+
+    /* ── Divider ── */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 48px 0 0;
+    }
+
+    /* ── Overlay cards ── */
+    .overlay-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 16px;
+    }
+    .overlay-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .overlay-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .overlay-card h3 .icon { font-size: 16px; }
+    .overlay-card p {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 12px;
+    }
+    .overlay-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .overlay-card ul li {
+      font-size: 12.5px;
+      color: var(--muted);
+      padding-left: 14px;
+      position: relative;
+    }
+    .overlay-card ul li::before {
+      content: '–';
+      position: absolute;
+      left: 0;
+      color: #334155;
+    }
+    .car-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(251,191,36,0.1);
+      border: 1px solid rgba(251,191,36,0.3);
+      color: var(--yellow);
+      border-radius: 4px;
+      padding: 1px 5px;
+      letter-spacing: 0.06em;
+      vertical-align: middle;
+      margin-left: 2px;
+    }
+
+    /* ── Feature list ── */
+    .feature-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 12px;
+    }
+    .feature-item {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .feature-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .feature-text strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 3px;
+    }
+    .feature-text span {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── Install section ── */
+    .install-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 560px) { .install-options { grid-template-columns: 1fr; } }
+
+    .install-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+    .install-card.recommended { border-color: rgba(59,130,246,0.4); }
+    .install-card h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .rec-badge {
+      font-size: 9px;
+      font-weight: 700;
+      background: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.4);
+      color: var(--accent-lt);
+      border-radius: 4px;
+      padding: 1px 6px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .install-card p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── Steps ── */
+    .steps { display: flex; flex-direction: column; gap: 12px; }
+    .step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.3);
+      color: var(--accent-lt);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .step-text { font-size: 13.5px; color: #94a3b8; line-height: 1.5; }
+    .step-text strong { color: #e2e8f0; }
+
+    /* ── Kbd ── */
+    kbd {
+      display: inline-block;
+      padding: 1px 7px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: monospace;
+      color: #94a3b8;
+    }
+
+    /* ── Note box ── */
+    .note {
+      background: rgba(251,191,36,0.06);
+      border: 1px solid rgba(251,191,36,0.2);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #a3834c;
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+    .note-icon { flex-shrink: 0; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: #334155;
+    }
+    footer a { color: #475569; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <span class="flag">🏁</span>
+    RaceLayer
+  </div>
+  <div class="nav-links">
+    <a href="#overlays">Overlays</a>
+    <a href="#features">Features</a>
+    <a href="#install">Install</a>
+    <a href="https://github.com/jaybrower/racelayer" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="hero-badge">🏎 Windows · iRacing · Free</div>
+  <h1>The HUD your<br><span>iRacing</span> deserves.</h1>
+  <p>Lightweight, transparent overlays that surface real-time telemetry right on top of iRacing — no launcher, no subscription, no BS.</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="https://github.com/jaybrower/racelayer/releases/latest" target="_blank" rel="noopener">
+      ⬇ Download Latest
+    </a>
+    <a class="btn btn-secondary" href="https://github.com/jaybrower/racelayer" target="_blank" rel="noopener">
+      View on GitHub
+    </a>
+  </div>
+  <div class="chips">
+    <span class="chip">Electron + React</span>
+    <span class="chip">iRacing shared memory</span>
+    <span class="chip">No injecting</span>
+    <span class="chip">Per-monitor layout</span>
+    <span class="chip">In-app updates</span>
+    <span class="chip">Windows 10/11</span>
+  </div>
+</section>
+
+<!-- ── Main content ── -->
+<main class="content">
+
+  <!-- Overlays -->
+  <hr id="overlays" />
+  <section class="section">
+    <div class="section-label">What's included</div>
+    <div class="section-title">Four overlays, out of the box</div>
+
+    <div class="overlay-grid">
+
+      <div class="overlay-card">
+        <h3><span class="icon">📋</span> Relative</h3>
+        <p>Proximity list centered on your car — drivers ahead and behind at a glance.</p>
+        <ul>
+          <li>Gap to player (seconds / laps)</li>
+          <li>Current position</li>
+          <li>Position gained/lost vs. starting grid</li>
+          <li>iRating and Safety Rating</li>
+          <li>Estimated iRating delta based on current order</li>
+        </ul>
+      </div>
+
+      <div class="overlay-card">
+        <h3><span class="icon">🎛 </span> Gauges</h3>
+        <p>Full-width instrument bar for the bottom of your screen.</p>
+        <ul>
+          <li>RPM bar with redline indicator</li>
+          <li>Throttle and brake trace</li>
+          <li>Gear, speed (MPH), lap delta to PB</li>
+          <li>Fuel level</li>
+          <li>TC indicator <span class="car-tag">†</span> — dial level + active flash</li>
+          <li>ABS indicator <span class="car-tag">†</span> — dial level + active flash</li>
+        </ul>
+      </div>
+
+      <div class="overlay-card">
+        <h3><span class="icon">⛽</span> Pit Strategy</h3>
+        <p>Fuel and tire data to help you nail your stop window.</p>
+        <ul>
+          <li>Current fuel and lap-by-lap consumption rate</li>
+          <li>Laps remaining on current fuel</li>
+          <li>Lap-time history with degradation delta</li>
+          <li>Estimated "pit by lap" based on fuel window</li>
+        </ul>
+      </div>
+
+      <div class="overlay-card">
+        <h3><span class="icon">🌡</span> Tire Temps <span class="car-tag">†</span></h3>
+        <p>Four-corner temperature display with heat-mapped zones per tire.</p>
+        <ul>
+          <li>Inner, middle, outer zones per corner</li>
+          <li>Cold → hot color gradient</li>
+          <li>Live surface temps; falls back to carcass temps</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="note">
+      <span class="note-icon">⚠️</span>
+      <span>Items marked <strong style="color:#fbbf24;">†</strong> depend on car support — RaceLayer auto-hides them when the active car doesn't expose that data. No manual configuration needed.</span>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <hr id="features" />
+  <section class="section">
+    <div class="section-label">Built-in</div>
+    <div class="section-title">Everything you'd want</div>
+
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">🚀</div>
+        <div class="feature-text">
+          <strong>Launch on startup</strong>
+          <span>Optional Windows login item — RaceLayer sits in the tray ready to go whenever you load iRacing.</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-text">
+          <strong>Draggable layout mode</strong>
+          <span>Press a shortcut to unlock all overlays, drag them wherever you want, then lock back in. Positions saved per monitor configuration.</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">⚙️</div>
+        <div class="feature-text">
+          <strong>Per-session-type visibility</strong>
+          <span>Configure each overlay and element independently for practice, qualifying, and race sessions.</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">⌨️</div>
+        <div class="feature-text">
+          <strong>Configurable shortcuts</strong>
+          <span>Remap the layout-mode and settings shortcuts to any key combo you want from the Settings panel.</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🛠</div>
+        <div class="feature-text">
+          <strong>Dev mode</strong>
+          <span>Preview overlays with simulated data — no iRacing session required. Choose practice, qualifying, or race data.</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🔄</div>
+        <div class="feature-text">
+          <strong>In-app updates</strong>
+          <span>Check for, download, and install new versions directly from the Settings panel — no manual download needed.</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-text">
+          <strong>No performance overhead</strong>
+          <span>Reads from iRacing's shared memory — no injection. Overlays are hidden entirely when iRacing isn't running.</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🏅</div>
+        <div class="feature-text">
+          <strong>Safety Rating badges</strong>
+          <span>Color-coded letter badges (red → blue) in the Relative overlay for instant at-a-glance Safety Rating reads.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Install -->
+  <hr id="install" />
+  <section class="section">
+    <div class="section-label">Get started</div>
+    <div class="section-title">Installation</div>
+
+    <div class="install-options">
+      <div class="install-card recommended">
+        <h4>
+          Installer
+          <span class="rec-badge">Recommended</span>
+        </h4>
+        <p><code>RaceLayer-x.x.x.exe</code><br>Standard NSIS installer. Adds a Start Menu entry and supports in-app updates.</p>
+      </div>
+      <div class="install-card">
+        <h4>Portable</h4>
+        <p><code>RaceLayer-portable-x.x.x.exe</code><br>Single file, no install required. Run it from anywhere.</p>
+      </div>
+    </div>
+
+    <a class="btn btn-primary" href="https://github.com/jaybrower/racelayer/releases/latest" target="_blank" rel="noopener" style="margin-bottom:32px;display:inline-flex;">
+      ⬇ Download on GitHub Releases
+    </a>
+
+    <div class="note" style="background:rgba(59,130,246,0.06);border-color:rgba(59,130,246,0.2);color:#4d7bad;margin-top:0;margin-bottom:28px;">
+      <span class="note-icon">ℹ️</span>
+      <span><strong style="color:#60a5fa;">Windows only.</strong> Requires a 64-bit version of Windows 10 or later.</span>
+    </div>
+
+    <div class="section-title" style="font-size:18px;margin-top:32px;margin-bottom:16px;">Quick start</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">Run the installer (or launch the portable exe) — a <strong>tray icon</strong> appears in your system tray.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">Start iRacing and load into any session — <strong>overlays appear automatically</strong> when connected.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">Right-click the tray icon or press <kbd>Ctrl+Shift+O</kbd> to open <strong>Settings</strong>.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text">Press <kbd>Ctrl+Shift+L</kbd> to enter <strong>Layout Mode</strong> — drag overlays anywhere, then press again to lock.</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>RaceLayer is open source and free to use. &nbsp;·&nbsp; <a href="https://github.com/jaybrower/racelayer" target="_blank" rel="noopener">GitHub</a> &nbsp;·&nbsp; <a href="https://github.com/jaybrower/racelayer/releases" target="_blank" rel="noopener">Releases</a> &nbsp;·&nbsp; MIT License</p>
+</footer>
+
+</body>
+</html>
