@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RaceLayer — iRacing HUD Overlay</title>
   <meta name="description" content="A lightweight, customizable iRacing HUD overlay for Windows. Real-time telemetry overlays with no performance impact." />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="icon" type="image/png" href="icon.png" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -55,7 +57,7 @@
       align-items: center;
       gap: 8px;
     }
-    .nav-brand .flag { font-size: 18px; }
+    .nav-brand img { width: 24px; height: 24px; border-radius: 6px; }
     .nav-links { display: flex; gap: 20px; align-items: center; }
     .nav-links a {
       font-size: 13px;
@@ -387,7 +389,7 @@
 
 <nav>
   <div class="nav-brand">
-    <span class="flag">🏁</span>
+    <img src="icon.svg" alt="RaceLayer icon" />
     RaceLayer
   </div>
   <div class="nav-links">
@@ -400,7 +402,8 @@
 
 <!-- ── Hero ── -->
 <section class="hero">
-  <div class="hero-badge">🏎 Windows · iRacing · Free</div>
+  <img src="icon.svg" alt="RaceLayer" style="width:72px;height:72px;border-radius:18px;margin-bottom:20px;box-shadow:0 0 0 1px rgba(255,255,255,0.08);" />
+  <div class="hero-badge">Windows · iRacing · Free</div>
   <h1>The HUD your<br><span>iRacing</span> deserves.</h1>
   <p>Lightweight, transparent overlays that surface real-time telemetry right on top of iRacing — no launcher, no subscription, no BS.</p>
   <div class="hero-actions">

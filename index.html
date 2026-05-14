@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>jaybrower</title>
+  <link rel="icon" type="image/svg+xml" href="racelayer-icon.svg" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -47,7 +48,8 @@
       background: rgba(255,255,255,0.06);
       border-color: rgba(59,130,246,0.4);
     }
-    .project-icon { font-size: 22px; flex-shrink: 0; }
+    .project-icon { flex-shrink: 0; }
+    .project-icon img { width: 36px; height: 36px; border-radius: 9px; display: block; }
     .project-info strong {
       display: block;
       font-size: 14px;
@@ -65,7 +67,7 @@
   </div>
   <div class="projects">
     <a class="project-card" href="/racelayer/">
-      <div class="project-icon">🏁</div>
+      <div class="project-icon"><img src="racelayer-icon.svg" alt="RaceLayer" /></div>
       <div class="project-info">
         <strong>RaceLayer</strong>
         <span>iRacing HUD overlay for Windows</span>
