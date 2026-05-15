@@ -419,6 +419,7 @@
     <span class="chip">No injecting</span>
     <span class="chip">Per-monitor layout</span>
     <span class="chip">Pit-aware</span>
+    <span class="chip">Stint-aware</span>
     <span class="chip">In-app updates</span>
     <span class="chip">Windows 10/11</span>
   </div>
@@ -468,7 +469,9 @@
         <ul>
           <li>Current fuel and lap-by-lap consumption rate</li>
           <li>Laps remaining on current fuel</li>
-          <li>Tire degradation vs. session-best lap (out-laps and in-laps filtered out)</li>
+          <li>Stint-scoped tire-deg trend — last lap vs. the rolling average of the prior 3 stint laps</li>
+          <li>Secondary "vs stint best" delta so you know how off-peak you're running</li>
+          <li>Out-laps and in-laps filtered automatically — wear numbers stay honest</li>
           <li>Estimated "pit by lap" based on fuel window</li>
         </ul>
       </div>
@@ -559,6 +562,20 @@
         <div class="feature-text">
           <strong>Pit-aware overlays</strong>
           <span>Overlays detect when you're in pit and adapt automatically — Relative switches to leaderboard-position view, tire-deg analysis ignores out-laps and in-laps so wear numbers stay honest.</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📈</div>
+        <div class="feature-text">
+          <strong>Stint-scoped pace tracking</strong>
+          <span>Pit Strategy compares your last lap to the rolling average of the previous 3 in-stint laps so you can see at a glance whether your pace is improving or fading, with a secondary delta to the stint's fastest lap.</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🙈</div>
+        <div class="feature-text">
+          <strong>Hides in menus</strong>
+          <span>Overlays disappear when you're in the garage, get-in-car screen, replay viewer, or spectator mode — and reappear automatically the moment you're back in your cockpit.</span>
         </div>
       </div>
     </div>
