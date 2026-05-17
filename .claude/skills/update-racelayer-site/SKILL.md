@@ -64,7 +64,7 @@ Examples of "no" — invisible to users: GH Actions workflows, gitignore entries
 After edits:
 
 ```bash
-cd /c/code/jaybrower.github.io
+cd /c/code/oiddad.github.io
 git add racelayer/index.html
 git commit -m "docs(racelayer): <one-line summary of what changed for vX.Y.Z>
 
@@ -84,7 +84,7 @@ GitHub Pages picks up the change within ~1 minute of the push.
 - The version in the install-card placeholders (`RaceLayer-x.x.x.exe`) — these are intentional placeholders, kept generic
 - The Download Latest button — it uses the GitHub `/releases/latest` redirect
 - The README-style "Windows 10/11" / "Free" badges — these are platform/license facts, not release content
-- The root `c:\code\jaybrower.github.io\index.html` — that's the landing page for all projects, not RaceLayer-specific
+- The root `c:\code\oiddad.github.io\index.html` — that's the landing page for all projects, not RaceLayer-specific
 
 ## Failure modes to watch for
 
