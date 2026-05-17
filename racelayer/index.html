@@ -374,6 +374,93 @@
     }
     .note-icon { flex-shrink: 0; }
 
+    /* ── Feedback ── */
+    .feedback-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 28px;
+      align-items: start;
+    }
+    @media (max-width: 720px) { .feedback-grid { grid-template-columns: 1fr; gap: 20px; } }
+
+    .feedback-pitch p {
+      font-size: 13.5px;
+      color: #94a3b8;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .feedback-pitch p:last-child { margin-bottom: 0; }
+    .feedback-pitch strong { color: #e2e8f0; font-weight: 600; }
+    .feedback-pitch .direct-link {
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+
+    .feedback-form {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-lt);
+    }
+    .field label .optional {
+      color: var(--muted);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: none;
+      margin-left: 4px;
+    }
+    .field input,
+    .field select,
+    .field textarea {
+      background: rgba(15,23,42,0.6);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 9px 11px;
+      font-size: 13.5px;
+      color: var(--text);
+      font-family: inherit;
+      line-height: 1.5;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .field textarea { resize: vertical; min-height: 96px; }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: rgba(59,130,246,0.5);
+      background: rgba(15,23,42,0.9);
+    }
+    .field select {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'><path d='M1 1.5L6 6.5L11 1.5' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+    }
+    .feedback-form button[type="submit"] {
+      align-self: flex-start;
+      font-family: inherit;
+    }
+    .feedback-form .form-note {
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
     /* ── Footer ── */
     footer {
       border-top: 1px solid var(--border);
@@ -396,6 +483,7 @@
     <a href="#overlays">Overlays</a>
     <a href="#features">Features</a>
     <a href="#install">Install</a>
+    <a href="#feedback">Feedback</a>
     <a href="https://github.com/oiddad/racelayer" target="_blank" rel="noopener">GitHub</a>
   </div>
 </nav>
@@ -644,7 +732,92 @@
     </div>
   </section>
 
+  <!-- Feedback -->
+  <hr id="feedback" />
+  <section class="section">
+    <div class="section-label">Bugs &amp; ideas</div>
+    <div class="section-title">Found a bug? Have an idea?</div>
+
+    <div class="feedback-grid">
+      <div class="feedback-pitch">
+        <p>RaceLayer is built in the open — every bug report and feature request lives in the <strong>GitHub issue tracker</strong>, visible to everyone.</p>
+        <p>Fill out the form and you'll be taken to GitHub with everything pre-filled. Review, tweak, and submit. A <strong>free GitHub account</strong> is required.</p>
+        <p><a class="direct-link" href="https://github.com/oiddad/racelayer/issues/new/choose" target="_blank" rel="noopener">Or file directly on GitHub →</a></p>
+      </div>
+
+      <form class="feedback-form" id="feedback-form" novalidate>
+        <div class="field">
+          <label for="fb-type">Type</label>
+          <select id="fb-type" required>
+            <option value="bug">Bug report</option>
+            <option value="feature">Feature request</option>
+            <option value="question">Question</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fb-title">Title</label>
+          <input id="fb-title" type="text" required maxlength="120" placeholder="One-line summary" />
+        </div>
+        <div class="field">
+          <label for="fb-version">RaceLayer version <span class="optional">(optional)</span></label>
+          <input id="fb-version" type="text" placeholder="e.g. v0.1.5" />
+        </div>
+        <div class="field">
+          <label for="fb-description">Description</label>
+          <textarea id="fb-description" required rows="6" placeholder="What happened, what you expected, steps to reproduce — or the feature you'd like to see."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Open on GitHub →</button>
+        <div class="form-note">Opens a new tab with your report pre-filled on GitHub. You'll still need to click <em>Submit new issue</em> there.</div>
+      </form>
+    </div>
+  </section>
+
 </main>
+
+<script>
+  (function () {
+    var form = document.getElementById('feedback-form');
+    if (!form) return;
+
+    var TYPE_META = {
+      bug:      { prefix: '[Bug]',      labels: 'bug' },
+      feature:  { prefix: '[Feature]',  labels: 'enhancement' },
+      question: { prefix: '[Question]', labels: 'question' }
+    };
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var type        = document.getElementById('fb-type').value;
+      var title       = document.getElementById('fb-title').value.trim();
+      var version     = document.getElementById('fb-version').value.trim();
+      var description = document.getElementById('fb-description').value.trim();
+
+      if (!title || !description) {
+        if (!title) document.getElementById('fb-title').focus();
+        else        document.getElementById('fb-description').focus();
+        return;
+      }
+
+      var meta = TYPE_META[type] || TYPE_META.bug;
+      var body = description + '\n\n---\n' +
+                 '**RaceLayer version:** ' + (version || '_not specified_') + '\n' +
+                 '**Submitted via:** racelayer site feedback form';
+
+      var params = new URLSearchParams({
+        title:  meta.prefix + ' ' + title,
+        body:   body,
+        labels: meta.labels
+      });
+
+      window.open(
+        'https://github.com/oiddad/racelayer/issues/new?' + params.toString(),
+        '_blank',
+        'noopener'
+      );
+    });
+  })();
+</script>
 
 <footer>
   <p>RaceLayer is open source and free to use. &nbsp;·&nbsp; <a href="https://github.com/oiddad/racelayer" target="_blank" rel="noopener">GitHub</a> &nbsp;·&nbsp; <a href="https://github.com/oiddad/racelayer/releases" target="_blank" rel="noopener">Releases</a> &nbsp;·&nbsp; MIT License</p>
