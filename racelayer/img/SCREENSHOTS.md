@@ -17,11 +17,16 @@ Tracking captures for the v0.2 site update. Drop new PNGs in this folder and tic
 - [x] `01-03.png` — close traffic, multiple cars visible
 
 ### Per-overlay (02-XX)
-- [ ] `02-relative.png` — Relative overlay; side-indicator chevrons firing ideally
-- [ ] `02-gauges.png` — Gauges; RPM bar near shift point so the zone color is visible
-- [ ] `02-pit.png` — Pit Strategy; mid-race with at least one full stint recorded
-- [ ] `02-tires.png` — Tire Temps; a few laps in so all four corners have real color
-- [ ] `02-radar.png` — Radar; ideally a car alongside
+
+Naming pattern: `02-<overlay>-NN.png` — capture 1–3 variants per overlay if easy, we'll pick the strongest for the card.
+
+- [x] **Gauges** — `02-gauges-01.png` ✓ wired (ABS active, RPM full, all readouts populated)
+  - [ ] nice-to-have: `02-gauges-NN.png` with RPM bar at shift point (zone color + flash visible)
+  - [ ] nice-to-have: `02-gauges-NN.png` with TC indicator flashing
+- [ ] **Relative** — `02-relative-NN.png` (ideally with side-indicator chevrons firing)
+- [ ] **Pit Strategy** — `02-pit-NN.png` (mid-race with at least one full stint recorded)
+- [ ] **Tire Temps** — `02-tires-NN.png` (a few laps in so all four corners have real color)
+- [ ] **Radar** — `02-radar-NN.png` (ideally a car alongside)
 
 ### Optional (03-XX)
 - [ ] `03-preview.png` — Preview Mode toggle or a session running on simulated data
